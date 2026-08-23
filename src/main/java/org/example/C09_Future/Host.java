@@ -1,0 +1,24 @@
+package org.example.C09_Future;
+
+import org.example.C09_Future.data.Data;
+import org.example.C09_Future.data.FutureData;
+import org.example.C09_Future.data.RealData;
+
+public class Host {
+  public Data request(final int count, final char c) {
+    System.out.println("  request(" + count + ", " + c + ") BEGIN");
+
+    final FutureData future = new FutureData();
+
+    new Thread() {
+      public void run() {
+        RealData realData = new RealData(count, c);
+        future.setRealData(realData);
+      }
+    }.start();
+
+    System.out.println("  request(" + count + ", " + c + ") END");
+
+    return future;
+  }
+}
