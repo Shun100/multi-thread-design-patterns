@@ -5,17 +5,18 @@ public class RealData implements Data {
 
   public RealData(int count, char c) {
     System.out.println("  making RealData(" + count + ", " + c + ") BEGIN");
-    char[] buffer = new char[count];
+    StringBuilder contentBuilder = new StringBuilder(count);
     for (int i = 0; i < count; i++) {
-      buffer[i] = c;
+      contentBuilder.append(c);
       try {
         Thread.sleep(100);
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        Thread.currentThread().interrupt();
+        throw new IllegalStateException("Interrupted while creating RealData", e);
       }
     }
     System.out.println("  making RealData(" + count + ", " + c + ") END");
-    this.content = new String(buffer);
+    this.content = contentBuilder.toString();
   }
 
   @Override

@@ -1,27 +1,24 @@
 package org.example.C09_Future.data;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 public class FutureData implements Data {
-  private RealData realData = null;
-  private boolean ready = false;
+  private final Future<RealData> future;
 
-  public synchronized void setRealData(RealData realData) {
-    if (ready) { return; }
-
-    this.realData = realData;
-    this.ready = true;
-    notifyAll();
+  public FutureData(Future<RealData> future) {
+    this.future = future;
   }
 
   @Override
-  public synchronized String getContent() {
-    while (!ready) {
-      try {
-        wait();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+  public String getContent() {
+    try {
+      return future.get().getContent();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Interrupted while waiting for the result", e);
+    } catch (ExecutionException e) {
+      throw new IllegalStateException("Failed to create the result", e.getCause());
     }
-
-    return realData.getContent();
   }
 }
